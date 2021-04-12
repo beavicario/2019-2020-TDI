@@ -1,0 +1,59 @@
+
+%%%% Tarea 2: Filtrado en el dominio de la frecuencia %%%%
+
+   % María Guadaño Nieto.
+   % Beatriz Vicario Guerrero.
+   
+%% ----- Parte Obligatoria
+
+clear all, close all, clc;
+
+Imagen = imread('Cabra.jfif');
+
+% -- Obtención de la FFT de la imagen original.
+%Imagen_Crop = imcrop(Imagen); //Recorte de imagen.
+X = rgb2gray(Imagen);
+
+X_FFT = fftshift(fft2(double(X),size(X,1),size(X,2)));
+
+% -- Obtención de módulo y fase de la FFT de la imagen original.
+FFT_modulo = abs(X_FFT);
+FFT_fase = angle(X_FFT);
+
+figure,
+subplot(2,3,1),imshow(X),title('Imagen Original')
+subplot(2,3,2),imshow(FFT_modulo, []),title('Módulo FFT Imagen Original')
+subplot(2,3,3),imshow(FFT_fase, []),title('Fase FFT Imagen Original') 
+subplot(2,3,4),mesh(X)
+subplot(2,3,5),mesh(FFT_modulo)
+subplot(2,3,6),mesh(FFT_fase)
+
+
+% -- Filtro paso alto para altas frecuencias (componentes con más energia)
+F = fft2(double(X));
+
+% -- Filtro ideal de 100
+H_Ideal_100 = lpfilter('ideal', 256, 256, 100);
+Filtrada_freq_Ideal_100 = (1 - H_Ideal_100).*F;
+FPA_Ideal = real(ifft2(Filtrada_freq_Ideal_100));
+% -- Modulo y fase
+FFT_I_modulo = abs(Filtrada_freq_Ideal_100);
+FFT_I_fase = angle(Filtrada_freq_Ideal_100);
+
+figure,
+subplot(2,3,1), imshow(FPA_Ideal, []), title('Filtro Paso alto ideal 100')
+subplot(2,3,2), imshow(FFT_I_modulo, []), title('Modulo de la FFT')
+subplot(2,3,3), imshow(FFT_I_fase, []), title('Fase de la FFT')
+subplot(2,3,4), mesh(FPA_Ideal)
+subplot(2,3,5), mesh(FFT_I_modulo)
+subplot(2,3,6), mesh(FFT_I_fase)
+
+%-- Se umbraliza la imagen y se pasan los pixeles en primer plano de 1 a 255
+X_FFT_binaria = imbinarize(X)*255;
+figure, imshow(X_FFT_binaria), title('Binaria')
+
+
+%% ----- CREATIVO
+% -- filtrado de eliminación de ruido adaptativo 2-D 'wiener2'
+% -- filtrado de imágenes en caja 2-D 'imboxfilt'
+% -- filtrado de imágenes en caja 2-D 'imboxfilt'
